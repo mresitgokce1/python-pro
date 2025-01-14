@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>{{ exam.title }}</h1>
+            <div class="badge bg-info">{{ exam.interest.name }}</div>
+            <div class="text-muted mt-2">Oluşturulma Tarihi: {{ exam.created_at.strftime('%d-%m-%Y') }}</div>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary">Geri Dön</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Sınav Soruları</h5>
+        </div>
+        <div class="card-body">
+            {% for question in exam.questions %}
+            <div class="question-box mb-4">
+                <h5>Soru {{ loop.index }}</h5>
+                <p>{{ question.question_text }}</p>
+                
+                <div class="question-details">
+                    <small class="text-muted">Soru Tipi: 
+                        {% if question.question_type.value == 'multiple_choice' %}
+                            <span class="badge bg-primary">Çoktan Seçmeli</span>
+                        {% else %}
+                            <span class="badge bg-success">Yazılı</span>
+                        {% endif %}
+                    </small>
+                    
+                    {% if question.question_type.value == 'multiple_choice' %}
+                    <div class="mt-2">
+                        <strong>Seçenekler:</strong>
+                        <ul class="list-unstyled">
+                            {% for option in question.options|json_loads %}
+                            <li class="{% if option == question.correct_answer %}text-success{% endif %}">
+                                {{ option }}
+                                {% if option == question.correct_answer %}
+                                    <i class="bi bi-check-circle-fill"></i>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-2">
+                        <strong>Doğru Cevap:</strong>
+                        <span class="text-success">{{ question.correct_answer }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Öğrenci Skorları</h5>
+        </div>
+        <div class="card-body">
+            {% if student_scores %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Öğrenci</th>
+                            <th>Deneme Sayısı</th>
+                            <th>En Yüksek Skor</th>
+                            <th>Ortalama Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student_id, data in student_scores.items() %}
+                        <tr>
+                            <td>{{ data.username }}</td>
+                            <td>{{ data.scores|length }}</td>
+                            <td>
+                                <span class="badge bg-success">
+                                    {{ data.scores|max }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ "%.2f"|format(data.scores|sum / data.scores|length) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Henüz bu sınava katılan öğrenci bulunmamaktadır.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

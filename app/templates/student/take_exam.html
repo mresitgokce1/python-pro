@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">{{ exam.title }}</h5>
+            {% if highest_score %}
+            <span class="badge bg-warning">
+                En Yüksek Skorunuz: {{ highest_score.score }}
+            </span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('student.submit_exam', exam_id=exam.id) }}">
+                {% for question in exam.questions %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Soru {{ loop.index }}</h5>
+                        <p class="card-text">{{ question.question_text }}</p>
+
+                        {% if question.question_type.value == 'multiple_choice' %}
+                            <div class="list-group">
+                                {% for option in question.options|json_loads %}
+                                <label class="list-group-item">
+                                    <input class="form-check-input me-1" 
+                                           type="radio" 
+                                           name="answer_{{ question.id }}" 
+                                           value="{{ option }}" 
+                                           required>
+                                    {{ option }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <textarea name="answer_{{ question.id }}" 
+                                          class="form-control" 
+                                          rows="4" 
+                                          required></textarea>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Sınavı Tamamla</button>
+                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

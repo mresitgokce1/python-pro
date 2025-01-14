@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="welcome-section">
+        <h1>Sınav Sistemine Hoş Geldiniz</h1>
+        
+        {% if current_user.is_authenticated %}
+            {% if current_user.is_teacher %}
+                <h2>Öğretmen Paneli</h2>
+                <div class="action-buttons">
+                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-primary">Dashboard'a Git</a>
+                    <a href="{{ url_for('teacher.list_interests') }}" class="btn btn-primary">İlgi Alanlarını Yönet</a>
+                </div>
+            {% else %}
+                <h2>Öğrenci Paneli</h2>
+                <div class="action-buttons">
+                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary">Dashboard'a Git</a>
+                </div>
+            {% endif %}
+        {% else %}
+            <p>Devam etmek için lütfen giriş yapın veya kayıt olun.</p>
+            <div class="action-buttons">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Giriş Yap</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Kayıt Ol</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="features-section">
+        <h2>Sistem Özellikleri</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Öğretmenler İçin</h3>
+                <ul>
+                    <li>Sınav oluşturma</li>
+                    <li>İlgi alanları yönetimi</li>
+                    <li>Sınav sonuçlarını takip etme</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h3>Öğrenciler İçin</h3>
+                <ul>
+                    <li>İlgi alanlarına göre sınavlar</li>
+                    <li>Anında sonuç görüntüleme</li>
+                    <li>Gelişim takibi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

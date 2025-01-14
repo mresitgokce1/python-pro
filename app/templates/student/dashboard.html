@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Öğrenci Paneli</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">İlgi Alanlarım</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('student.update_interests') }}">
+                <div class="row g-3">
+                    {% for interest in all_interests %}
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" 
+                                   class="form-check-input" 
+                                   id="interest-{{ interest.id }}" 
+                                   name="interests[]" 
+                                   value="{{ interest.id }}"
+                                   {% if interest in current_user.interests %}checked{% endif %}>
+                            <label class="form-check-label" for="interest-{{ interest.id }}">
+                                {{ interest.name }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">İlgi Alanlarını Güncelle</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Mevcut Sınavlar</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sınav Adı</th>
+                            <th>İlgi Alanı</th>
+                            <th>En Yüksek Skorunuz</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in exams %}
+                        <tr>
+                            <td>{{ exam.title }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ exam.interest.name }}</span>
+                            </td>
+                            <td>
+                                {% set highest_score = exam.scores|selectattr('user_id', 'equalto', current_user.id)|sort(attribute='score')|last %}
+                                {% if highest_score %}
+                                    <span class="badge bg-success">{{ highest_score.score }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Henüz girilmemiş</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('student.take_exam', exam_id=exam.id) }}" 
+                                   class="btn btn-primary btn-sm">Sınava Gir</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

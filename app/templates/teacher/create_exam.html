@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h2 class="card-title mb-0">Yeni Sınav Oluştur</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('teacher.create_exam') }}">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Sınav Başlığı</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="interest" class="form-label">İlgi Alanı</label>
+                            <select class="form-select" id="interest" name="interest_id" required>
+                                <option value="">Seçiniz...</option>
+                                {% for interest in interests %}
+                                <option value="{{ interest.id }}">{{ interest.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="questions">
+                    <div class="question-form card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Soru 1</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Soru Metni</label>
+                                <textarea class="form-control" name="questions[0][text]" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Soru Tipi</label>
+                                <select class="form-select" name="questions[0][type]" onchange="toggleOptions(this, 0)">
+                                    <option value="multiple_choice">Çoktan Seçmeli</option>
+                                    <option value="text">Yazılı</option>
+                                </select>
+                            </div>
+
+                            <div class="options-group" id="options-0">
+                                <div class="mb-3">
+                                    <label class="form-label">Seçenekler</label>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 1">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 2">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 3">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Doğru Cevap</label>
+                                <input type="text" class="form-control" name="questions[0][correct_answer]" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-secondary" onclick="addQuestion()">Yeni Soru Ekle</button>
+                    <button type="submit" class="btn btn-primary">Sınavı Oluştur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let questionCount = 1;
+
+function toggleOptions(select, questionIndex) {
+    const optionsGroup = document.getElementById(`options-${questionIndex}`);
+    if (select.value === 'multiple_choice') {
+        optionsGroup.style.display = 'block';
+    } else {
+        optionsGroup.style.display = 'none';
+    }
+}
+
+function addQuestion() {
+    const questionsDiv = document.getElementById('questions');
+    const newQuestion = `
+        <div class="question-form card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Soru ${questionCount + 1}</h5>
+                <div class="mb-3">
+                    <label class="form-label">Soru Metni</label>
+                    <textarea class="form-control" name="questions[${questionCount}][text]" rows="3" required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Soru Tipi</label>
+                    <select class="form-select" name="questions[${questionCount}][type]" onchange="toggleOptions(this, ${questionCount})">
+                        <option value="multiple_choice">Çoktan Seçmeli</option>
+                        <option value="text">Yazılı</option>
+                    </select>
+                </div>
+
+                <div class="options-group" id="options-${questionCount}">
+                    <div class="mb-3">
+                        <label class="form-label">Seçenekler</label>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 1">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 2">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Doğru Cevap</label>
+                    <input type="text" class="form-control" name="questions[${questionCount}][correct_answer]" required>
+                </div>
+            </div>
+        </div>
+    `;
+    questionsDiv.insertAdjacentHTML('beforeend', newQuestion);
+    questionCount++;
+}
+</script>
+{% endblock %}
