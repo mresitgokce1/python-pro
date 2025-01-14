@@ -25,8 +25,8 @@
 
 1. **Projeyi klonlayın:**
 ```bash
-git clone https://github.com/username/exam-system.git
-cd exam-system
+git clone https://github.com/mresitgokce1/python-pro.git
+cd python-pro
 ```
 
 2. **Virtual environment oluşturun:**
@@ -68,8 +68,8 @@ Uygulama [http://localhost:5000](http://localhost:5000) adresinde çalışacakt�
 
 | Rol | Kullanıcı Adı | Şifre |
 |-----|---------------|-------|
-| 👨‍🏫 Öğretmen | teacher1 | 123456 |
-| 👨‍🎓 Öğrenci | student1 | 123456 |
+| 👨‍🏫 Öğretmen | teacher | 123123123 |
+| 👨‍🎓 Öğrenci | student | 123123123 |
 
 ## 📁 Proje Yapısı
 
@@ -79,7 +79,6 @@ exam-system/
 │   ├── models/
 │   ├── routes/
 │   ├── templates/
-│   ├── static/
 │   └── __init__.py
 ├── migrations/
 ├── venv/
@@ -89,71 +88,6 @@ exam-system/
 ├── run.py
 └── seed.py
 ```
-
-## 🔧 Geliştirme
-
-```bash
-# Yeni branch oluştur
-git checkout -b feature/yeni-ozellik
-
-# Değişiklikleri commit et
-git add .
-git commit -m "Yeni özellik: açıklama"
-
-# Branch'i push et
-git push origin feature/yeni-ozellik
-```
-
-## ❗ Hata Durumunda
-
-Olası hata çözümleri:
-
-1. **Virtual environment aktif mi?**
-```bash
-# Windows
-venv\Scripts\activate
-
-# Linux/macOS
-source venv/bin/activate
-```
-
-2. **Paketler güncel mi?**
-```bash
-pip install -r requirements.txt
-```
-
-3. **Migration'lar güncel mi?**
-```bash
-flask db upgrade
-```
-
-4. **Veritabanını sıfırlama:**
-```bash
-# Windows
-del instance/exam_system.db
-# Linux/macOS
-rm instance/exam_system.db
-
-# Yeniden oluştur
-flask db upgrade
-python seed.py
-```
-
-## 🤝 Katkıda Bulunma
-
-1. Fork'layın
-2. Feature branch oluşturun (`git checkout -b feature/YeniOzellik`)
-3. Commit'leyin (`git commit -m 'Yeni özellik eklendi'`)
-4. Push'layın (`git push origin feature/YeniOzellik`)
-5. Pull Request açın
-
-## 📝 Lisans
-
-Bu proje MIT lisansı ile lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
-
-## 📧 İletişim
-
-Reşit - [@github](https://github.com/username)
 
 Proje Linki: [https://github.com/username/exam-system](https://github.com/username/exam-system)
 
