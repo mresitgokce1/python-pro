@@ -88,8 +88,3 @@ exam-system/
 ├── run.py
 └── seed.py
 ```
-
-Proje Linki: [https://github.com/username/exam-system](https://github.com/username/exam-system)
-
----
-⭐️ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
