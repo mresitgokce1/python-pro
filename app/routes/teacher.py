@@ -4,6 +4,7 @@ from app.models import Interest, Exam, Question, QuestionType
 from app import db
 import json
 
+from app.models.options import QuestionOption
 from app.models.score import Score
 from app.models.student_answer import StudentAnswer
 from app.models.user import User
@@ -65,7 +66,7 @@ def create_exam():
             created_by=current_user.id
         )
         db.session.add(exam)
-        db.session.commit()
+        db.session.flush()  # ID'yi almak için flush
 
         question_data = []
         i = 0
@@ -74,7 +75,11 @@ def create_exam():
                 'text': request.form.get(f'questions[{i}][text]'),
                 'type': request.form.get(f'questions[{i}][type]'),
                 'correct_answer': request.form.get(f'questions[{i}][correct_answer]'),
-                'options': request.form.getlist(f'questions[{i}][options][]') if request.form.get(f'questions[{i}][type]') == 'multiple_choice' else None
+                'options': {
+                    label: request.form.get(f'questions[{i}][options][{label}]')
+                    for label in ['A', 'B', 'C', 'D']
+                    if request.form.get(f'questions[{i}][options][{label}]')
+                } if request.form.get(f'questions[{i}][type]') == 'multiple_choice' else None
             }
             question_data.append(question)
             i += 1
@@ -84,10 +89,19 @@ def create_exam():
                 exam_id=exam.id,
                 question_text=data['text'],
                 question_type=QuestionType(data['type']),
-                correct_answer=data['correct_answer'],
-                options=json.dumps(data['options']) if data['options'] else None
+                correct_answer=data['correct_answer']
             )
             db.session.add(question)
+            db.session.flush()  # Question ID'yi almak için
+
+            if data['type'] == 'multiple_choice' and data['options']:
+                for label, text in data['options'].items():
+                    option = QuestionOption(
+                        question_id=question.id,
+                        option_label=label,
+                        option_text=text
+                    )
+                    db.session.add(option)
         
         db.session.commit()
         flash('Sınav başarıyla oluşturuldu!')
@@ -136,7 +150,9 @@ def exam_detail(exam_id):
         flash('Bu işlem için yetkiniz yok.', 'danger')
         return redirect(url_for('main.index'))
     
-    exam = Exam.query.get_or_404(exam_id)
+    exam = Exam.query.options(
+        db.joinedload(Exam.questions).joinedload(Question.options)
+    ).get_or_404(exam_id)
     
     if exam.created_by != current_user.id:
         flash('Bu sınava erişim yetkiniz yok.', 'danger')
@@ -155,3 +171,18 @@ def exam_detail(exam_id):
     return render_template('teacher/exam_detail.html', 
                          exam=exam, 
                          student_scores=student_scores)
+
+@bp.route('/interest/delete/<int:interest_id>', methods=['POST'])
+@login_required
+def delete_interest(interest_id):
+    interest = Interest.query.get_or_404(interest_id)
+    
+    try:
+        db.session.delete(interest)
+        db.session.commit()
+        flash('İlgi alanı başarıyla silindi.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('İlgi alanı silinirken bir hata oluştu.', 'danger')
+        
+    return redirect(url_for('teacher.list_interests'))

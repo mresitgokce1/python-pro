@@ -48,16 +48,24 @@
                             <div class="options-group" id="options-0">
                                 <div class="mb-3">
                                     <label class="form-label">Seçenekler</label>
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 1">
+                                    <div class="row g-3" id="options-container-0">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">A</span>
+                                                <input type="text" class="form-control" name="questions[0][options][A]" placeholder="A Seçeneği">
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 2">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">B</span>
+                                                <input type="text" class="form-control" name="questions[0][options][B]" placeholder="B Seçeneği">
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" name="questions[0][options][]" placeholder="Seçenek 3">
-                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addOption(0)">
+                                            <i class="bi bi-plus-circle"></i> Yeni Seçenek Ekle
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +88,9 @@
 </div>
 
 <script>
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 let questionCount = 1;
+let optionCounts = { 0: 2 }; // İlk soru için başlangıç değeri
 
 function toggleOptions(select, questionIndex) {
     const optionsGroup = document.getElementById(`options-${questionIndex}`);
@@ -89,6 +99,42 @@ function toggleOptions(select, questionIndex) {
     } else {
         optionsGroup.style.display = 'none';
     }
+}
+
+function addOption(questionIndex) {
+    if (!optionCounts[questionIndex]) {
+        optionCounts[questionIndex] = 2;
+    }
+
+    if (optionCounts[questionIndex] >= 26) {
+        alert('Maksimum seçenek sayısına ulaştınız!');
+        return;
+    }
+
+    const container = document.getElementById(`options-container-${questionIndex}`);
+    const nextLetter = LETTERS[optionCounts[questionIndex]];
+    
+    const newOption = `
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text">${nextLetter}</span>
+                <input type="text" class="form-control" 
+                       name="questions[${questionIndex}][options][${nextLetter}]" 
+                       placeholder="${nextLetter} Seçeneği">
+                <button class="btn btn-outline-danger" type="button" 
+                        onclick="removeOption(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', newOption);
+    optionCounts[questionIndex]++;
+}
+
+function removeOption(button) {
+    button.closest('.col-md-6').remove();
 }
 
 function addQuestion() {
@@ -113,16 +159,24 @@ function addQuestion() {
                 <div class="options-group" id="options-${questionCount}">
                     <div class="mb-3">
                         <label class="form-label">Seçenekler</label>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 1">
+                        <div class="row g-3" id="options-container-${questionCount}">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">A</span>
+                                    <input type="text" class="form-control" name="questions[${questionCount}][options][A]" placeholder="A Seçeneği">
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 2">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">B</span>
+                                    <input type="text" class="form-control" name="questions[${questionCount}][options][B]" placeholder="B Seçeneği">
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="questions[${questionCount}][options][]" placeholder="Seçenek 3">
-                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addOption(${questionCount})">
+                                <i class="bi bi-plus-circle"></i> Yeni Seçenek Ekle
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -135,6 +189,7 @@ function addQuestion() {
         </div>
     `;
     questionsDiv.insertAdjacentHTML('beforeend', newQuestion);
+    optionCounts[questionCount] = 2;
     questionCount++;
 }
 </script>

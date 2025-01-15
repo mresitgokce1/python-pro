@@ -36,14 +36,18 @@
                     <div class="mt-2">
                         <strong>Seçenekler:</strong>
                         <ul class="list-unstyled">
-                            {% for option in question.options|json_loads %}
-                            <li class="{% if option == question.correct_answer %}text-success{% endif %}">
-                                {{ option }}
-                                {% if option == question.correct_answer %}
-                                    <i class="bi bi-check-circle-fill"></i>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
+                            {% if question.options %}
+                                {% for option in question.options %}
+                                <li class="{% if option.option_label == question.correct_answer %}text-success{% endif %}">
+                                    {{ option.option_label }}) {{ option.option_text }}
+                                    {% if option.option_label == question.correct_answer %}
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>Seçenekler bulunamadı.</li>
+                            {% endif %}
                         </ul>
                     </div>
                     {% endif %}

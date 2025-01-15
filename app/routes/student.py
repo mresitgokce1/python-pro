@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.models import Exam, Score, StudentAnswer, Interest
 from app import db
+from app.models.exam import Question
 
 bp = Blueprint('student', __name__, url_prefix='/student')
 
@@ -53,7 +54,10 @@ def submit_exam(exam_id):
     if current_user.is_teacher:
         return redirect(url_for('teacher.dashboard'))
     
-    exam = Exam.query.get_or_404(exam_id)
+    exam = Exam.query.options(
+        db.joinedload(Exam.questions).joinedload(Question.options)
+    ).get_or_404(exam_id)
+    
     total_score = 0
     max_score_per_question = 100 / len(exam.questions)
     
@@ -69,7 +73,7 @@ def submit_exam(exam_id):
             answer_similarity = similar(answer_text.lower(), question.correct_answer.lower())
             score_for_question = max_score_per_question * answer_similarity
             total_score += score_for_question
-            is_correct = answer_similarity > 0.8
+            is_correct = answer_similarity > 0.7
             
         student_answer = StudentAnswer(
             student_id=current_user.id,

@@ -24,4 +24,5 @@ class Question(db.Model):
     correct_answer = db.Column(db.String(200), nullable=False)
     options = db.Column(db.String(500))
     student_answers = db.relationship('StudentAnswer', backref='question', lazy=True)
+    options = db.relationship('QuestionOption', backref='question', lazy='joined')
     

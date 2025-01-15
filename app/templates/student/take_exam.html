@@ -20,19 +20,25 @@
                         <p class="card-text">{{ question.question_text }}</p>
 
                         {% if question.question_type.value == 'multiple_choice' %}
-                            <div class="list-group">
-                                {% for option in question.options|json_loads %}
+                        <div class="list-group">
+                            {% if question.options %}
+                                {% for option in question.options %}
                                 <label class="list-group-item">
                                     <input class="form-check-input me-1" 
-                                           type="radio" 
-                                           name="answer_{{ question.id }}" 
-                                           value="{{ option }}" 
-                                           required>
-                                    {{ option }}
+                                        type="radio" 
+                                        name="answer_{{ question.id }}" 
+                                        value="{{ option.option_label }}" 
+                                        required>
+                                    {{ option.option_label }}) {{ option.option_text }}
                                 </label>
                                 {% endfor %}
-                            </div>
-                        {% else %}
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    Bu soru için seçenekler bulunamadı.
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
                             <div class="form-group">
                                 <textarea name="answer_{{ question.id }}" 
                                           class="form-control" 

@@ -10,11 +10,14 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
         
-        if user and user.check_password(password):
-            login_user(user)
-            return redirect(url_for('main.index'))
+        user = User.query.filter_by(username=username).first()
+
+        if user:
+            if user.check_password(password):
+                login_user(user)
+                return redirect(url_for('main.index'))
+            
         flash('Geçersiz kullanıcı adı veya şifre')
     
     return render_template('auth/login.html')
@@ -26,18 +29,27 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         is_teacher = request.form.get('is_teacher') == 'on'
-        
+
         if User.query.filter_by(username=username).first():
             flash('Bu kullanıcı adı zaten kullanılıyor.')
             return redirect(url_for('auth.register'))
-            
+
+        if User.query.filter_by(email=email).first():
+            flash('Bu email adresi zaten kullanılıyor.')
+            return redirect(url_for('auth.register'))
+
         user = User(username=username, email=email, is_teacher=is_teacher)
         user.set_password(password)
         db.session.add(user)
-        db.session.commit()
-        
-        return redirect(url_for('auth.login'))
-        
+
+        try:
+            db.session.commit()
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.')
+            return redirect(url_for('auth.register'))
+
     return render_template('auth/register.html')
 
 @bp.route('/logout')

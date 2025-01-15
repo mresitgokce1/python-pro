@@ -3,3 +3,4 @@ from .interest import Interest
 from .exam import Exam, Question, QuestionType
 from .student_answer import StudentAnswer
 from .score import Score
+from .options import QuestionOption
