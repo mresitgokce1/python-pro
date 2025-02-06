@@ -6,6 +6,9 @@
 
 Öğretmenlerin sınav oluşturabileceği ve öğrencilerin ilgi alanlarına göre sınavlara katılabileceği bir Flask web uygulaması.
 
+## Canlı Linki
+- https://mrgokce.pythonanywhere.com/
+
 ## 🚀 Özellikler
 
 - ✅ Öğretmen ve öğrenci girişi
